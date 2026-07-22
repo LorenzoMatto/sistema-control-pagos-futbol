@@ -30,7 +30,7 @@ export default function RootLayout({
 
           {/* Main content */}
           <main className="main-content">
-            <div className="glass-panel main-panel">{children}</div>
+            <div className="main-panel">{children}</div>
           </main>
           
           {/* Bottom Navigation for mobile */}
