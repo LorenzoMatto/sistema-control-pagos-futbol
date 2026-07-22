@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import TopHeader from "@/components/TopHeader";
+import DesktopSidebar from "@/components/DesktopSidebar";
 
 export const metadata: Metadata = {
   title: "Fondo Fútbol — Gestión de Pagos",
@@ -23,16 +24,22 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <div className="app-shell">
-          {/* Header superior */}
-          <TopHeader />
+          {/* Sidebar solo en desktop */}
+          <DesktopSidebar />
 
-          {/* Main content */}
-          <main className="main-content">
-            <div className="main-panel">{children}</div>
-          </main>
-          
-          {/* Bottom Navigation for mobile */}
-          <BottomNav />
+          {/* Zona derecha: header móvil + contenido + bottom nav */}
+          <div className="content-area">
+            {/* Header solo en móvil */}
+            <TopHeader />
+
+            {/* Contenido principal */}
+            <main className="main-content">
+              <div className="main-panel">{children}</div>
+            </main>
+
+            {/* Bottom Navigation solo en móvil */}
+            <BottomNav />
+          </div>
         </div>
       </body>
     </html>
