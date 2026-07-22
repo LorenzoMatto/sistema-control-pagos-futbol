@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import TopHeader from "@/components/TopHeader";
 
 export const metadata: Metadata = {
   title: "Fondo Fútbol — Gestión de Pagos",
@@ -22,6 +23,9 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <div className="app-shell">
+          {/* Header superior */}
+          <TopHeader />
+
           {/* Main content */}
           <main className="main-content">
             <div className="main-panel">{children}</div>
