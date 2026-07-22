@@ -32,7 +32,7 @@ export default async function Dashboard() {
     <div style={{ paddingBottom: "2rem" }}>
 
       {/* Stat Cards */}
-      <div className="stats-grid" style={{ marginBottom: "2rem" }}>
+      <div className="stats-grid" style={{ marginBottom: "2rem", gridTemplateColumns: "1fr" }}>
         <StatCard
           icon={<Wallet size={28} />}
           color={saldoFondo < 0 ? "var(--danger)" : "var(--primary)"}
