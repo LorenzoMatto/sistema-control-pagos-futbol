@@ -169,6 +169,7 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   transition: var(--transition);
+  min-width: 0; /* Permite que el grid cell se achique */
 }
 
 .glass-panel:hover {
@@ -457,7 +458,7 @@ h1, h2, h3, h4, h5 {
   .main-panel {
     padding: 1rem;
     overflow-y: visible;
-    overflow-x: hidden;
+    /* Removido overflow-x: hidden para evitar cortes estrictos */
   }
 
   .stats-grid {
@@ -522,15 +523,16 @@ h1, h2, h3, h4, h5 {
     max-width: 100%;
   }
 
-  /* Reducir ancho mínimo de tabla en móvil para mejorar UX */
+  /* Reducir ancho mínimo de tabla en móvil para mejorar UX y hacer que los datos entren */
   .table {
-    min-width: 380px;
+    min-width: 100%; /* Se adapta a la pantalla y permite wrap de texto */
   }
 
   .table th,
   .table td {
-    padding: 0.6rem 0.65rem;
-    font-size: 0.82rem;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.8rem;
+    word-break: break-word; /* Permite que el texto largo (como descripciones) salte de línea */
   }
 
   /* Glasspanel con menos padding en móvil */
