@@ -1,0 +1,51 @@
+// Prisma schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Miembro {
+  id        String   @id @default(uuid())
+  nombre    String
+  apodo     String?
+  activo    Boolean  @default(true)
+  creadoEn  DateTime @default(now())
+  
+  pagos     Pago[]
+}
+
+model Evento {
+  id            String   @id @default(uuid())
+  descripcion   String
+  fecha         DateTime
+  montoEsperado Float
+  cerrado       Boolean  @default(false)
+  creadoEn      DateTime @default(now())
+  
+  pagos         Pago[]
+}
+
+model Pago {
+  id            String   @id @default(uuid())
+  miembroId     String
+  eventoId      String
+  monto         Float
+  fechaRegistro DateTime @default(now())
+
+  miembro       Miembro  @relation(fields: [miembroId], references: [id])
+  evento        Evento   @relation(fields: [eventoId], references: [id])
+  
+  @@unique([miembroId, eventoId])
+}
+
+model Gasto {
+  id          String   @id @default(uuid())
+  descripcion String
+  monto       Float
+  fecha       DateTime @default(now())
+}
