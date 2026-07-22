@@ -13,7 +13,7 @@ export default function TopHeader() {
             alt="Futboleros"
             width={36}
             height={36}
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }}
           />
         </div>
 
