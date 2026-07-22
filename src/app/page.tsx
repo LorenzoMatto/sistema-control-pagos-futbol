@@ -75,7 +75,7 @@ export default async function Dashboard() {
       {/* Charts Row */}
       <div className="charts-grid">
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
-          <h3 style={{ fontSize: "1rem", marginBottom: "1rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.85rem" }}>
+          <h3 style={{ marginBottom: "1rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.85rem" }}>
             Distribución del Fondo
           </h3>
           <BalancePieChart ingresos={totalIngresos} gastos={totalGastos} />
