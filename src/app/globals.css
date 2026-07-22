@@ -427,14 +427,14 @@ h1, h2, h3, h4, h5 {
     height: 100vh;
     margin: 0;
     border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-    z-index: 250; /* Higher than mobile-menu-btn (200) to cover it */
+    z-index: 250;
     transition: left 0.3s ease;
     width: var(--sidebar-width);
   }
 
   .sidebar.open {
     left: 0;
-    background: rgba(20, 27, 45, 0.98); /* Solid background to prevent bleeding */
+    background: rgba(20, 27, 45, 0.98);
   }
 
   .sidebar-overlay.open {
@@ -464,15 +464,84 @@ h1, h2, h3, h4, h5 {
   .stat-value {
     font-size: 1.1rem;
   }
+
+  /* Mejorar legibilidad de tablas en tablet */
+  .table th,
+  .table td {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 480px) {
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .stat-icon {
+    padding: 0.65rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
   }
 
   .btn {
     font-size: 0.85rem;
     padding: 0.6rem 1rem;
   }
+
+  /* Formularios más cómodos en móvil */
+  .form-input {
+    padding: 0.85rem 1rem;
+    font-size: 1rem; /* Evitar zoom automático en iOS */
+  }
+
+  /* Tablas en móvil: scroll horizontal suave */
+  .table-wrapper {
+    border-radius: var(--radius-md);
+  }
+
+  .table th,
+  .table td {
+    padding: 0.6rem 0.65rem;
+    font-size: 0.82rem;
+  }
+
+  /* Glasspanel con menos padding en móvil */
+  .glass-panel {
+    border-radius: var(--radius-md);
+  }
+
+  /* Charts que se adapten mejor */
+  .charts-grid {
+    gap: 1rem;
+  }
+
+  /* Header de páginas más compacto */
+  h2 {
+    font-size: 1.4rem !important;
+  }
 }
+
+@media (max-width: 360px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .main-content {
+    padding: 0.5rem;
+    padding-top: 3.75rem;
+  }
+}
+
