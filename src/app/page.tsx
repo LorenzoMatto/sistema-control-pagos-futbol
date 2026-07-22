@@ -30,20 +30,6 @@ export default async function Dashboard() {
 
   return (
     <div style={{ paddingBottom: "2rem" }}>
-      {/* Header Banner */}
-      <div className="glass-panel" style={{ 
-        marginBottom: "2rem", 
-        padding: "2rem",
-        background: "linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(16, 185, 129, 0.05))",
-        borderLeft: "4px solid var(--primary)"
-      }}>
-        <h2 style={{ fontSize: "clamp(1.8rem, 4vw, 2.5rem)", marginBottom: "0.5rem", fontWeight: 700, letterSpacing: "-0.03em" }}>
-          Panel General
-        </h2>
-        <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "600px" }}>
-          Resumen financiero del fondo del grupo. Aquí puedes ver el balance general, ingresos, egresos y el rendimiento de los últimos eventos.
-        </p>
-      </div>
 
       {/* Stat Cards */}
       <div className="stats-grid" style={{ marginBottom: "2rem" }}>

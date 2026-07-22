@@ -9,7 +9,7 @@ const navLinks = [
   { href: "/pagos", icon: Wallet, label: "Pagos" },
   { href: "/eventos", icon: CalendarCheck, label: "Eventos" },
   { href: "/gastos", icon: Receipt, label: "Gastos" },
-  { href: "/miembros", icon: Users, label: "Grupo" },
+  { href: "/miembros", icon: Users, label: "Miembros" },
 ];
 
 export default function BottomNav() {
