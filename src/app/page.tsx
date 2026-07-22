@@ -29,13 +29,19 @@ export default async function Dashboard() {
   }));
 
   return (
-    <div>
-      <div style={{ marginBottom: "2rem" }}>
-        <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", marginBottom: "0.25rem" }}>
+    <div style={{ paddingBottom: "2rem" }}>
+      {/* Header Banner */}
+      <div className="glass-panel" style={{ 
+        marginBottom: "2rem", 
+        padding: "2rem",
+        background: "linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(16, 185, 129, 0.05))",
+        borderLeft: "4px solid var(--primary)"
+      }}>
+        <h2 style={{ fontSize: "clamp(1.8rem, 4vw, 2.5rem)", marginBottom: "0.5rem", fontWeight: 700, letterSpacing: "-0.03em" }}>
           Panel General
         </h2>
-        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
-          Resumen financiero del fondo del grupo
+        <p style={{ color: "var(--text-muted)", fontSize: "1rem", maxWidth: "600px" }}>
+          Resumen financiero del fondo del grupo. Aquí puedes ver el balance general, ingresos, egresos y el rendimiento de los últimos eventos.
         </p>
       </div>
 
@@ -74,17 +80,27 @@ export default async function Dashboard() {
 
       {/* Charts Row */}
       <div className="charts-grid">
-        <div className="glass-panel" style={{ padding: "1.5rem" }}>
-          <h3 style={{ marginBottom: "1rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.85rem" }}>
-            Distribución del Fondo
-          </h3>
+        <div className="glass-panel chart-item-small" style={{ padding: "1.5rem" }}>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <h3 style={{ color: "var(--text-main)", fontWeight: 600, fontSize: "1.1rem" }}>
+              Distribución del Fondo
+            </h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.2rem" }}>
+              Proporción de ingresos vs. egresos
+            </p>
+          </div>
           <BalancePieChart ingresos={totalIngresos} gastos={totalGastos} />
         </div>
 
-        <div className="glass-panel" style={{ padding: "1.5rem" }}>
-          <h3 style={{ marginBottom: "1rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", fontSize: "0.85rem" }}>
-            Recaudación por Evento
-          </h3>
+        <div className="glass-panel chart-item-large" style={{ padding: "1.5rem" }}>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <h3 style={{ color: "var(--text-main)", fontWeight: 600, fontSize: "1.1rem" }}>
+              Recaudación por Evento
+            </h3>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "0.2rem" }}>
+              Comparativa de monto esperado vs. recaudado
+            </p>
+          </div>
           <EventosBarChart data={barData} />
         </div>
       </div>

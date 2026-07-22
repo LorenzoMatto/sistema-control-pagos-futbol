@@ -21,8 +21,8 @@
   --radius-md: 12px;
   --radius-sm: 8px;
 
-  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.15);
+  --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 25px rgba(59, 130, 246, 0.25);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -162,19 +162,32 @@ body {
 
 /* ─── Glassmorphism ───────────────────────────────────── */
 .glass-panel {
-  background: var(--surface-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
+  background: linear-gradient(135deg, rgba(30, 41, 65, 0.8), rgba(20, 27, 45, 0.6));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   transition: var(--transition);
-  min-width: 0; /* Permite que el grid cell se achique */
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .glass-panel:hover {
-  border-color: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.25);
   box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
 }
 
 /* ─── Typography ─────────────────────────────────────── */
@@ -187,31 +200,34 @@ h1, h2, h3, h4, h5 {
 /* ─── Stat Cards ─────────────────────────────────────── */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
 }
 
 .stat-card {
-  padding: 1.25rem;
+  padding: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .stat-icon {
-  padding: 0.85rem;
+  padding: 1rem;
   border-radius: var(--radius-md);
   flex-shrink: 0;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.1);
 }
 
 .stat-label {
   color: var(--text-muted);
-  font-size: 0.85rem;
-  margin-bottom: 0.15rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat-value {
-  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -220,8 +236,24 @@ h1, h2, h3, h4, h5 {
 /* ─── Charts Grid ─────────────────────────────────────── */
 .charts-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: repeat(12, 1fr);
   gap: 1.5rem;
+}
+
+.chart-item-full {
+  grid-column: span 12;
+}
+
+.chart-item-half {
+  grid-column: span 6;
+}
+
+.chart-item-large {
+  grid-column: span 8;
+}
+
+.chart-item-small {
+  grid-column: span 4;
 }
 
 /* ─── Page Grids ─────────────────────────────────────── */
@@ -402,8 +434,10 @@ h1, h2, h3, h4, h5 {
 /* ─── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 1024px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
+  .charts-grid .chart-item-large,
+  .charts-grid .chart-item-small,
+  .charts-grid .chart-item-half {
+    grid-column: span 12;
   }
 
   .page-grid-2 {
