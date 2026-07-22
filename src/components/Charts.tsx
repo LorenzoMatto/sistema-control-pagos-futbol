@@ -164,7 +164,7 @@ export function EventosBarChart({ data }: EventosChartProps) {
           tickLine={false}
           dx={-10}
         />
-        <Tooltip content={<CustomBarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)", radius: [8, 8, 0, 0] }} />
+        <Tooltip content={<CustomBarTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
         <Legend
           formatter={(value) => <span style={{ color: "#94a3b8", fontSize: "0.85rem", paddingLeft: "4px" }}>{value}</span>}
           wrapperStyle={{ paddingTop: "10px" }}
