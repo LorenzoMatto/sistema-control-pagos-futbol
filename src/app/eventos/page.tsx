@@ -97,7 +97,7 @@ export default async function EventosPage() {
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <h3 style={{ marginBottom: "1rem" }}>Historial de Eventos</h3>
           <div className="table-wrapper">
-            <table className="table">
+            <table className="table mobile-cards">
               <thead>
                 <tr>
                   <th>Descripción</th>
@@ -117,16 +117,16 @@ export default async function EventosPage() {
                 ) : (
                   eventos.map((e) => (
                     <tr key={e.id} style={{ opacity: e.cerrado ? 0.6 : 1 }}>
-                      <td style={{ fontWeight: 500 }}>{e.descripcion}</td>
-                      <td>{formatFecha(e.fecha)}</td>
-                      <td>{formatGuarani(e.montoEsperado)}</td>
-                      <td>
+                      <td data-label="Descripción" style={{ fontWeight: 500 }}>{e.descripcion}</td>
+                      <td data-label="Fecha">{formatFecha(e.fecha)}</td>
+                      <td data-label="Monto (₲)">{formatGuarani(e.montoEsperado)}</td>
+                      <td data-label="Estado">
                         <span className={`badge ${e.cerrado ? "badge-danger" : "badge-success"}`}>
                           {e.cerrado ? "Cerrado" : "Abierto"}
                         </span>
                       </td>
                       {isAdmin && (
-                        <td style={{ textAlign: "right" }}>
+                        <td data-label="Acción" style={{ textAlign: "right" }}>
                           <form action={toggleCerrado} style={{ display: "inline-block" }}>
                             <input type="hidden" name="id" value={e.id} />
                             <input type="hidden" name="cerrado" value={String(e.cerrado)} />

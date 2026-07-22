@@ -83,7 +83,7 @@ export default async function MiembrosPage() {
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <h3 style={{ marginBottom: "1rem" }}>Miembros Activos ({miembros.length})</h3>
           <div className="table-wrapper">
-            <table className="table">
+            <table className="table mobile-cards">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -102,11 +102,11 @@ export default async function MiembrosPage() {
                 ) : (
                   miembros.map((m) => (
                     <tr key={m.id}>
-                      <td style={{ fontWeight: 500 }}>{m.nombre}</td>
-                      <td>{m.apodo ? <span className="badge badge-success">{m.apodo}</span> : "-"}</td>
-                      <td>{formatFecha(m.creadoEn)}</td>
+                      <td data-label="Nombre" style={{ fontWeight: 500 }}>{m.nombre}</td>
+                      <td data-label="Apodo">{m.apodo ? <span className="badge badge-success">{m.apodo}</span> : "-"}</td>
+                      <td data-label="Fecha de Ingreso">{formatFecha(m.creadoEn)}</td>
                       {isAdmin && (
-                        <td style={{ textAlign: "right" }}>
+                        <td data-label="Acción" style={{ textAlign: "right" }}>
                           <form action={disableMiembro} style={{ display: "inline-block" }}>
                             <input type="hidden" name="id" value={m.id} />
                             <button type="submit" className="btn btn-outline btn-icon" title="Dar de baja">

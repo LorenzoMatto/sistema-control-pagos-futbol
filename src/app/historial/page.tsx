@@ -27,7 +27,7 @@ export default async function HistorialPage() {
         </h3>
         
         <div className="table-wrapper">
-          <table className="table">
+          <table className="table mobile-cards">
             <thead>
               <tr>
                 <th>Fecha de Registro</th>
@@ -46,12 +46,12 @@ export default async function HistorialPage() {
               ) : (
                 pagos.map((p) => (
                   <tr key={p.id}>
-                    <td>
+                    <td data-label="Fecha de Registro">
                       {formatFecha(p.fechaRegistro, { dateStyle: "short", timeStyle: "short" })}
                     </td>
-                    <td style={{ fontWeight: 500 }}>{p.miembro.nombre} {p.miembro.apodo ? `(${p.miembro.apodo})` : ""}</td>
-                    <td>{p.evento.descripcion}</td>
-                    <td style={{ color: "var(--success)" }}>+{formatGuarani(p.monto)}</td>
+                    <td data-label="Miembro" style={{ fontWeight: 500 }}>{p.miembro.nombre} {p.miembro.apodo ? `(${p.miembro.apodo})` : ""}</td>
+                    <td data-label="Evento/Semana">{p.evento.descripcion}</td>
+                    <td data-label="Monto (₲)" style={{ color: "var(--success)" }}>+{formatGuarani(p.monto)}</td>
                   </tr>
                 ))
               )}

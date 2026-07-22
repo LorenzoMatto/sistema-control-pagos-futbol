@@ -109,7 +109,7 @@ export default async function PagosPage({
             <h3 style={{ marginBottom: "1rem", color: "var(--danger)" }}>Faltas de Pago ({noPagados.length})</h3>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
               {noPagados.map(m => (
-                <li key={m.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-sm)" }}>
+                <li key={m.id} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-sm)" }}>
                   <span style={{ fontWeight: 500 }}>{m.nombre} {m.apodo ? `(${m.apodo})` : ""}</span>
                   
                   {isAdmin && (
@@ -137,7 +137,7 @@ export default async function PagosPage({
               {pagados.map(m => {
                 const pago = pagosPorMiembro.get(m.id);
                 return (
-                  <li key={m.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-sm)" }}>
+                  <li key={m.id} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-sm)" }}>
                     <div>
                       <span style={{ fontWeight: 500, display: "block" }}>{m.nombre}</span>
                       <span style={{ fontSize: "0.8rem", color: "var(--success)" }}>Pagó {formatGuarani(pago?.monto)}</span>

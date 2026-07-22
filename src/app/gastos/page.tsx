@@ -83,7 +83,7 @@ export default async function GastosPage() {
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <h3 style={{ marginBottom: "1rem" }}>Historial de Gastos</h3>
           <div className="table-wrapper">
-            <table className="table">
+            <table className="table mobile-cards">
               <thead>
                 <tr>
                   <th>Fecha</th>
@@ -102,15 +102,15 @@ export default async function GastosPage() {
                 ) : (
                   gastos.map((g) => (
                     <tr key={g.id}>
-                      <td>
+                      <td data-label="Fecha">
                         {formatFecha(g.fecha, { dateStyle: "short", timeStyle: "short" })}
                       </td>
-                      <td style={{ fontWeight: 500 }}>{g.descripcion}</td>
-                      <td style={{ color: "var(--danger)" }}>
+                      <td data-label="Descripción" style={{ fontWeight: 500 }}>{g.descripcion}</td>
+                      <td data-label="Monto (₲)" style={{ color: "var(--danger)" }}>
                         -{formatGuarani(g.monto)}
                       </td>
                       {isAdmin && (
-                        <td style={{ textAlign: "right" }}>
+                        <td data-label="Acción" style={{ textAlign: "right" }}>
                           <form action={deleteGasto} style={{ display: "inline-block" }}>
                             <input type="hidden" name="id" value={g.id} />
                             <button type="submit" className="btn btn-outline btn-icon" title="Eliminar (Revertir)">

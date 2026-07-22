@@ -3,6 +3,7 @@ import "./globals.css";
 import Link from "next/link";
 import { LayoutDashboard, Users, CalendarCheck, Wallet, History, Receipt, Menu } from "lucide-react";
 import MobileSidebar from "@/components/MobileSidebar";
+import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   title: "Fondo Fútbol — Gestión de Pagos",
@@ -16,15 +17,6 @@ export const viewport: Viewport = {
   userScalable: false,
   themeColor: "#0b0f19",
 };
-
-const navLinks = [
-  { href: "/", icon: "dashboard", label: "Dashboard" },
-  { href: "/miembros", icon: "users", label: "Miembros" },
-  { href: "/eventos", icon: "calendar", label: "Semanas / Eventos" },
-  { href: "/pagos", icon: "wallet", label: "Pagos y Faltas" },
-  { href: "/gastos", icon: "receipt", label: "Gastos del Fondo" },
-  { href: "/historial", icon: "history", label: "Historial" },
-];
 
 export default function RootLayout({
   children,
@@ -40,6 +32,9 @@ export default function RootLayout({
           <main className="main-content">
             <div className="glass-panel main-panel">{children}</div>
           </main>
+          
+          {/* Bottom Navigation for mobile */}
+          <BottomNav />
         </div>
       </body>
     </html>
