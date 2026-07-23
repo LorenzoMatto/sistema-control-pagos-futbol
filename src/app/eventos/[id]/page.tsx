@@ -7,11 +7,12 @@ import { ArrowLeft, Users } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function EventoDetallePage({ params }: { params: { id: string } }) {
+export default async function EventoDetallePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const isAdmin = await checkAuth();
   
   const evento = await prisma.evento.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       asignaciones: {
         include: { miembro: true },
