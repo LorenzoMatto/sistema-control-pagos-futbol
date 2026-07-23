@@ -59,8 +59,8 @@ export default function DesktopSidebar() {
             <Image
               src="/icon.png"
               alt="Futboleros"
-              width={52}
-              height={52}
+              width={80}
+              height={80}
               style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }}
             />
             <div>

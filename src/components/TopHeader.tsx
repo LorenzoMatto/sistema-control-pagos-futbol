@@ -11,8 +11,8 @@ export default function TopHeader() {
           <Image
             src="/icon.png"
             alt="Futboleros"
-            width={44}
-            height={44}
+            width={64}
+            height={64}
             style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }}
           />
         </div>
@@ -24,7 +24,7 @@ export default function TopHeader() {
         </div>
 
         {/* Espacio derecho para balancear */}
-        <div style={{ width: 44 }} />
+        <div style={{ width: 64 }} />
       </div>
     </header>
   );
