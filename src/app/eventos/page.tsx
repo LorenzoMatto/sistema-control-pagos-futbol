@@ -13,11 +13,10 @@ async function createEvento(formData: FormData) {
   if (!(await checkAuth())) throw new Error("Unauthorized");
 
   const descripcion = formData.get("descripcion") as string;
-  const fechaStr = formData.get("fecha") as string;
   const montoStr = formData.get("monto") as string;
   const tipoCalculo = formData.get("tipoCalculo") as string;
   
-  if (descripcion && fechaStr && montoStr) {
+  if (descripcion && montoStr) {
     const montoInput = parseFloat(montoStr);
     if (!isNaN(montoInput) && montoInput > 0) {
       
@@ -35,7 +34,7 @@ async function createEvento(formData: FormData) {
       await prisma.evento.create({
         data: {
           descripcion,
-          fecha: new Date(fechaStr),
+          fecha: new Date(),
           montoEsperado: montoIndividual,
           asignaciones: {
             create: miembrosActivos.map(m => ({
@@ -104,11 +103,8 @@ export default async function EventosPage() {
                 <label className="form-label">Descripción del Mes/Meta</label>
                 <input type="text" name="descripcion" className="form-input" required placeholder="Ej: Meta Agosto 2026" />
               </div>
-              <div className="form-group">
-                <label className="form-label">Fecha Límite</label>
-                <input type="date" name="fecha" className="form-input" required />
-              </div>
-              
+
+
               <div className="form-group">
                 <label className="form-label">Tipo de Cálculo</label>
                 <select name="tipoCalculo" className="form-input" required>
