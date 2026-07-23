@@ -15,18 +15,24 @@ export default async function Dashboard() {
   const saldoFondo = totalIngresos - totalGastos;
   const totalMiembros = await prisma.miembro.count({ where: { activo: true } });
 
-  // Datos para el gráfico de barras: últimos 6 eventos
+  // Datos para el gráfico de barras: últimos 6 eventos/metas
   const ultimosEventos = await prisma.evento.findMany({
     take: 6,
     orderBy: { fecha: "desc" },
-    include: { pagos: true },
+    include: { pagos: true, asignaciones: true },
   });
 
-  const barData = ultimosEventos.reverse().map((e) => ({
-    nombre: e.descripcion.length > 10 ? e.descripcion.slice(0, 10) + "…" : e.descripcion,
-    esperado: e.montoEsperado * totalMiembros,
-    recaudado: e.pagos.reduce((sum, p) => sum + p.monto, 0),
-  }));
+  const barData = ultimosEventos.reverse().map((e) => {
+    const esperadoReal = e.asignaciones.length > 0 
+      ? e.asignaciones.reduce((sum, a) => sum + a.monto, 0)
+      : e.montoEsperado * totalMiembros;
+
+    return {
+      nombre: e.descripcion.length > 10 ? e.descripcion.slice(0, 10) + "…" : e.descripcion,
+      esperado: esperadoReal,
+      recaudado: e.pagos.reduce((sum, p) => sum + p.monto, 0),
+    };
+  });
 
   return (
     <div style={{ paddingBottom: "2rem" }}>

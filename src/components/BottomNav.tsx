@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 const navLinks = [
   { href: "/", icon: LayoutDashboard, label: "Inicio" },
   { href: "/pagos", icon: Wallet, label: "Pagos" },
-  { href: "/eventos", icon: CalendarCheck, label: "Eventos" },
+  { href: "/eventos", icon: CalendarCheck, label: "Metas" },
   { href: "/gastos", icon: Receipt, label: "Gastos" },
   { href: "/miembros", icon: Users, label: "Miembros" },
 ];

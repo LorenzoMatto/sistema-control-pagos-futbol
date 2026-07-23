@@ -50,6 +50,7 @@ export default async function PagosPage({
   const params = await searchParams;
   const eventos = await prisma.evento.findMany({
     orderBy: { fecha: "desc" },
+    include: { asignaciones: true }
   });
 
   const selectedEventoId = params.eventoId || (eventos.length > 0 ? eventos[0].id : null);
@@ -105,15 +106,18 @@ export default async function PagosPage({
       {selectedEvento && (
         <div className="glass-panel" style={{ padding: "1.5rem", borderTop: "4px solid var(--primary)" }}>
           <h3 style={{ marginBottom: "1.5rem", color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            Meta: {formatGuarani(selectedEvento.montoEsperado)} por miembro
+            Meta Activa (Cuotas Personalizadas)
           </h3>
           
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             {miembros.map(m => {
+              const asignacion = selectedEvento.asignaciones.find(a => a.miembroId === m.id);
+              const cuotaEsperada = asignacion ? asignacion.monto : selectedEvento.montoEsperado;
+              
               const pagosDelMiembro = pagosPorMiembro.get(m.id) || [];
               const totalAbonado = pagosDelMiembro.reduce((sum, p) => sum + p.monto, 0);
-              const porcentaje = Math.min(100, Math.round((totalAbonado / selectedEvento.montoEsperado) * 100));
-              const estaAlDia = totalAbonado >= selectedEvento.montoEsperado;
+              const porcentaje = cuotaEsperada > 0 ? Math.min(100, Math.round((totalAbonado / cuotaEsperada) * 100)) : 100;
+              const estaAlDia = totalAbonado >= cuotaEsperada;
 
               return (
                 <div key={m.id} style={{ background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-md)", padding: "1.25rem", border: "1px solid rgba(255,255,255,0.05)" }}>
@@ -125,7 +129,7 @@ export default async function PagosPage({
                         {estaAlDia && <span style={{ color: "var(--success)", fontSize: "0.8rem", background: "var(--success-bg)", padding: "0.15rem 0.5rem", borderRadius: "999px" }}>Al día</span>}
                       </span>
                       <div style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
-                        Abonado: <span style={{ color: "var(--text-main)", fontWeight: 500 }}>{formatGuarani(totalAbonado)}</span> / {formatGuarani(selectedEvento.montoEsperado)}
+                        Abonado: <span style={{ color: "var(--text-main)", fontWeight: 500 }}>{formatGuarani(totalAbonado)}</span> / {formatGuarani(cuotaEsperada)}
                       </div>
                     </div>
                     

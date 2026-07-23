@@ -22,7 +22,7 @@ import { useEffect } from "react";
 const navLinks = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/miembros", icon: Users, label: "Miembros" },
-  { href: "/eventos", icon: CalendarCheck, label: "Semanas / Eventos" },
+  { href: "/eventos", icon: CalendarCheck, label: "Metas" },
   { href: "/pagos", icon: Wallet, label: "Pagos y Faltas" },
   { href: "/gastos", icon: Receipt, label: "Gastos del Fondo" },
   { href: "/historial", icon: History, label: "Historial" },

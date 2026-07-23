@@ -16,7 +16,8 @@ model Miembro {
   activo    Boolean  @default(true)
   creadoEn  DateTime @default(now())
   
-  pagos     Pago[]
+  pagos         Pago[]
+  asignaciones  AsignacionMeta[]
 }
 
 model Evento {
@@ -28,6 +29,7 @@ model Evento {
   creadoEn      DateTime @default(now())
   
   pagos         Pago[]
+  asignaciones  AsignacionMeta[]
 }
 
 model Pago {
@@ -46,4 +48,16 @@ model Gasto {
   descripcion String
   monto       Float
   fecha       DateTime @default(now())
+}
+
+model AsignacionMeta {
+  id        String   @id @default(uuid())
+  eventoId  String
+  miembroId String
+  monto     Float
+
+  evento    Evento   @relation(fields: [eventoId], references: [id])
+  miembro   Miembro  @relation(fields: [miembroId], references: [id], onDelete: Cascade)
+
+  @@unique([eventoId, miembroId])
 }
