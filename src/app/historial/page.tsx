@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
-import { History } from "lucide-react";
-import { formatFecha, formatGuarani } from "@/lib/format";
+import HistorialClient from "@/components/HistorialClient";
 
 export const dynamic = "force-dynamic";
 
@@ -21,44 +20,7 @@ export default async function HistorialPage() {
         </p>
       </div>
 
-      <div className="glass-panel" style={{ padding: "1.5rem" }}>
-        <h3 style={{ marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <History size={20} /> Movimientos Registrados
-        </h3>
-        
-        <div className="table-wrapper">
-          <table className="table mobile-cards">
-            <thead>
-              <tr>
-                <th>Fecha de Registro</th>
-                <th>Miembro</th>
-                <th>Evento/Semana</th>
-                <th>Monto (₲)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pagos.length === 0 ? (
-                <tr>
-                  <td colSpan={4} style={{ textAlign: "center", color: "var(--text-muted)", padding: "2rem" }}>
-                    No hay historial de pagos registrado.
-                  </td>
-                </tr>
-              ) : (
-                pagos.map((p) => (
-                  <tr key={p.id}>
-                    <td data-label="Fecha de Registro">
-                      {formatFecha(p.fechaRegistro, { dateStyle: "short", timeStyle: "short" })}
-                    </td>
-                    <td data-label="Miembro" style={{ fontWeight: 500 }}>{p.miembro.nombre} {p.miembro.apodo ? `(${p.miembro.apodo})` : ""}</td>
-                    <td data-label="Evento/Semana">{p.evento.descripcion}</td>
-                    <td data-label="Monto (₲)" style={{ color: "var(--success)" }}>+{formatGuarani(p.monto)}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <HistorialClient pagos={pagos} />
     </div>
   );
 }

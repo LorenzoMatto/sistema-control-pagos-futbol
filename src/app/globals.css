@@ -45,6 +45,22 @@ body {
   min-height: 100vh;
 }
 
+/* ─── Scrollbar Customization ──────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* ─── Layout ─────────────────────────────────────────── */
 
 .app-shell {

@@ -39,8 +39,6 @@ model Pago {
 
   miembro       Miembro  @relation(fields: [miembroId], references: [id])
   evento        Evento   @relation(fields: [eventoId], references: [id])
-  
-  @@unique([miembroId, eventoId])
 }
 
 model Gasto {

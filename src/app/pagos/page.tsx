@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
-import { Check, X } from "lucide-react";
+import { Check, X, DollarSign } from "lucide-react";
 import { formatGuarani } from "@/lib/format";
 import { checkAuth } from "@/app/actions/auth";
 
@@ -18,14 +18,12 @@ async function registrarPago(formData: FormData) {
   
   if (miembroId && eventoId && montoStr) {
     const monto = parseFloat(montoStr);
-    try {
+    if (!isNaN(monto) && monto > 0) {
       await prisma.pago.create({
         data: { miembroId, eventoId, monto },
       });
       revalidatePath("/pagos");
       revalidatePath("/");
-    } catch (e) {
-      // Ignorar duplicados silenciosamente para este MVP o manejar error
     }
   }
 }
@@ -57,36 +55,39 @@ export default async function PagosPage({
   const selectedEventoId = params.eventoId || (eventos.length > 0 ? eventos[0].id : null);
   
   const selectedEvento = eventos.find(e => e.id === selectedEventoId);
-  const miembros = await prisma.miembro.findMany({ where: { activo: true } });
+  const miembros = await prisma.miembro.findMany({ where: { activo: true }, orderBy: { nombre: 'asc' } });
   
   // Buscar pagos del evento seleccionado
   let pagos = [] as any[];
   if (selectedEventoId) {
     pagos = await prisma.pago.findMany({
       where: { eventoId: selectedEventoId },
+      orderBy: { fechaRegistro: "desc" }
     });
   }
 
-  // Estructuras de datos
-  const paidMemberIds = new Set(pagos.map(p => p.miembroId));
-  const pagosPorMiembro = new Map(pagos.map(p => [p.miembroId, p]));
-
-  const pagados = miembros.filter(m => paidMemberIds.has(m.id));
-  const noPagados = miembros.filter(m => !paidMemberIds.has(m.id));
+  // Agrupar pagos por miembro
+  const pagosPorMiembro = new Map<string, any[]>();
+  pagos.forEach(p => {
+    if (!pagosPorMiembro.has(p.miembroId)) {
+      pagosPorMiembro.set(p.miembroId, []);
+    }
+    pagosPorMiembro.get(p.miembroId)!.push(p);
+  });
 
   return (
     <div>
       <div style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", marginBottom: "0.25rem" }}>
-          Control de Pagos y Faltas
+          Control de Pagos
         </h2>
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
-          Registra quién pagó y quién está en falta por evento
+          Registra cobros parciales o totales de la meta fijada mensual
         </p>
       </div>
 
       <div style={{ marginBottom: "2rem" }}>
-        <h3 style={{ fontSize: "1.1rem", marginBottom: "1rem", color: "var(--text-muted)" }}>Selecciona el Evento/Semana</h3>
+        <h3 style={{ fontSize: "1.1rem", marginBottom: "1rem", color: "var(--text-muted)" }}>Selecciona el Mes/Periodo</h3>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
           {eventos.map(e => (
             <Link 
@@ -102,64 +103,82 @@ export default async function PagosPage({
       </div>
 
       {selectedEvento && (
-        <div className="page-grid-equal">
+        <div className="glass-panel" style={{ padding: "1.5rem", borderTop: "4px solid var(--primary)" }}>
+          <h3 style={{ marginBottom: "1.5rem", color: "var(--primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            Meta: {formatGuarani(selectedEvento.montoEsperado)} por miembro
+          </h3>
           
-          {/* Faltas (No Pagados) */}
-          <div className="glass-panel" style={{ padding: "1.5rem", borderTop: "4px solid var(--danger)" }}>
-            <h3 style={{ marginBottom: "1rem", color: "var(--danger)" }}>Faltas de Pago ({noPagados.length})</h3>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {noPagados.map(m => (
-                <li key={m.id} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-sm)" }}>
-                  <span style={{ fontWeight: 500 }}>{m.nombre} {m.apodo ? `(${m.apodo})` : ""}</span>
-                  
-                  {isAdmin && (
-                    <form action={registrarPago}>
-                      <input type="hidden" name="miembroId" value={m.id} />
-                      <input type="hidden" name="eventoId" value={selectedEvento.id} />
-                      <input type="hidden" name="monto" value={selectedEvento.montoEsperado} />
-                      <button type="submit" className="btn btn-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem", color: "var(--success)", borderColor: "var(--success)" }}>
-                        <Check size={16} /> Marcar Pagado
-                      </button>
-                    </form>
-                  )}
-                </li>
-              ))}
-              {noPagados.length === 0 && (
-                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Todos están al día en este evento.</p>
-              )}
-            </ul>
-          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            {miembros.map(m => {
+              const pagosDelMiembro = pagosPorMiembro.get(m.id) || [];
+              const totalAbonado = pagosDelMiembro.reduce((sum, p) => sum + p.monto, 0);
+              const porcentaje = Math.min(100, Math.round((totalAbonado / selectedEvento.montoEsperado) * 100));
+              const estaAlDia = totalAbonado >= selectedEvento.montoEsperado;
 
-          {/* Pagados */}
-          <div className="glass-panel" style={{ padding: "1.5rem", borderTop: "4px solid var(--success)" }}>
-            <h3 style={{ marginBottom: "1rem", color: "var(--success)" }}>Pagados ({pagados.length})</h3>
-            <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {pagados.map(m => {
-                const pago = pagosPorMiembro.get(m.id);
-                return (
-                  <li key={m.id} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "space-between", alignItems: "center", padding: "0.75rem", background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-sm)" }}>
+              return (
+                <div key={m.id} style={{ background: "rgba(0,0,0,0.2)", borderRadius: "var(--radius-md)", padding: "1.25rem", border: "1px solid rgba(255,255,255,0.05)" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", gap: "1rem" }}>
+                    
                     <div>
-                      <span style={{ fontWeight: 500, display: "block" }}>{m.nombre}</span>
-                      <span style={{ fontSize: "0.8rem", color: "var(--success)" }}>Pagó {formatGuarani(pago?.monto)}</span>
+                      <span style={{ fontWeight: 600, fontSize: "1.1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        {m.nombre} {m.apodo ? `(${m.apodo})` : ""}
+                        {estaAlDia && <span style={{ color: "var(--success)", fontSize: "0.8rem", background: "var(--success-bg)", padding: "0.15rem 0.5rem", borderRadius: "999px" }}>Al día</span>}
+                      </span>
+                      <div style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginTop: "0.25rem" }}>
+                        Abonado: <span style={{ color: "var(--text-main)", fontWeight: 500 }}>{formatGuarani(totalAbonado)}</span> / {formatGuarani(selectedEvento.montoEsperado)}
+                      </div>
                     </div>
                     
                     {isAdmin && (
-                      <form action={revertirPago}>
-                        <input type="hidden" name="id" value={pago?.id} />
-                        <button type="submit" className="btn btn-outline" style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem", color: "var(--danger)", borderColor: "var(--danger)" }}>
-                          <X size={16} /> Revertir
+                      <form action={registrarPago} style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+                        <input type="hidden" name="miembroId" value={m.id} />
+                        <input type="hidden" name="eventoId" value={selectedEvento.id} />
+                        <input 
+                          type="number" 
+                          name="monto" 
+                          placeholder="Monto a cobrar" 
+                          min="0"
+                          style={{ padding: "0.5rem", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", background: "rgba(0,0,0,0.3)", color: "white", width: "140px" }}
+                          required
+                        />
+                        <button type="submit" className="btn btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
+                          Cobrar
                         </button>
                       </form>
                     )}
-                  </li>
-                );
-              })}
-              {pagados.length === 0 && (
-                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Nadie ha pagado este evento todavía.</p>
-              )}
-            </ul>
-          </div>
+                  </div>
 
+                  {/* Barra de Progreso */}
+                  <div style={{ width: "100%", height: "8px", background: "rgba(255,255,255,0.1)", borderRadius: "999px", overflow: "hidden", marginBottom: "1rem" }}>
+                    <div style={{ width: `${porcentaje}%`, height: "100%", background: estaAlDia ? "var(--success)" : "var(--primary)", transition: "width 0.3s ease" }}></div>
+                  </div>
+
+                  {/* Lista de pagos parciales */}
+                  {pagosDelMiembro.length > 0 && (
+                    <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+                      <p style={{ marginBottom: "0.25rem", fontWeight: 500 }}>Historial de aportes de este mes:</p>
+                      <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        {pagosDelMiembro.map(pago => (
+                          <li key={pago.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(0,0,0,0.1)", padding: "0.3rem 0.5rem", borderRadius: "4px" }}>
+                            <span>+ {formatGuarani(pago.monto)} <span style={{ opacity: 0.6 }}>({new Date(pago.fechaRegistro).toLocaleDateString()})</span></span>
+                            {isAdmin && (
+                              <form action={revertirPago}>
+                                <input type="hidden" name="id" value={pago.id} />
+                                <button type="submit" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", display: "flex", alignItems: "center", padding: "0.2rem" }} title="Revertir este pago">
+                                  <X size={14} />
+                                </button>
+                              </form>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
