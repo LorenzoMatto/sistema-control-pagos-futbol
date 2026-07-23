@@ -1,9 +1,9 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { CalendarCheck, Lock, Unlock, Users } from "lucide-react";
-import { formatFecha, formatGuarani } from "@/lib/format";
+import { CalendarCheck } from "lucide-react";
 import { checkAuth } from "@/app/actions/auth";
-import Link from "next/link";
+import EventosTable from "@/components/EventosTable";
+import RenovarMetaModal from "@/components/RenovarMetaModal";
 
 export const dynamic = "force-dynamic";
 
@@ -76,12 +76,41 @@ export default async function EventosPage() {
   const eventos = await prisma.evento.findMany({
     orderBy: { fecha: "desc" },
     include: {
-      asignaciones: true
+      asignaciones: true,
+      pagos: true,
     }
   });
 
+  // Detectar metas que deben renovarse (abiertas, del día anterior o anterior, y completadas)
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  const metasParaRenovar = isAdmin ? eventos
+    .filter(e => {
+      if (e.cerrado) return false;
+      const fechaMeta = new Date(e.fecha);
+      fechaMeta.setHours(0, 0, 0, 0);
+      if (fechaMeta >= hoy) return false; // creada hoy, no aplica
+
+      const totalEsperado = e.asignaciones.reduce((acc, a) => acc + a.monto, 0);
+      const totalRecaudado = e.pagos.reduce((acc, p) => acc + p.monto, 0);
+      return totalRecaudado >= totalEsperado && totalEsperado > 0;
+    })
+    .map(e => ({
+      id: e.id,
+      descripcion: e.descripcion,
+      montoEsperado: e.montoEsperado,
+      totalRecaudado: e.pagos.reduce((acc, p) => acc + p.monto, 0),
+      totalEsperado: e.asignaciones.reduce((acc, a) => acc + a.monto, 0),
+    })) : [];
+
   return (
     <div>
+      {/* Modal de renovación — solo admin */}
+      {isAdmin && metasParaRenovar.length > 0 && (
+        <RenovarMetaModal metasCompletadas={metasParaRenovar} />
+      )}
+
       <div style={{ marginBottom: "2rem" }}>
         <h2 style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", marginBottom: "0.25rem" }}>
           Metas de Recaudación
@@ -103,7 +132,6 @@ export default async function EventosPage() {
                 <label className="form-label">Descripción del Mes/Meta</label>
                 <input type="text" name="descripcion" className="form-input" required placeholder="Ej: Meta Agosto 2026" />
               </div>
-
 
               <div className="form-group">
                 <label className="form-label">Tipo de Cálculo</label>
@@ -127,74 +155,7 @@ export default async function EventosPage() {
         {/* Lista */}
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <h3 style={{ marginBottom: "1rem" }}>Historial de Metas</h3>
-          <div className="table-wrapper">
-            <table className="table mobile-cards">
-              <thead>
-                <tr>
-                  <th>Descripción</th>
-                  <th>Monto Total Esperado</th>
-                  <th>Estado</th>
-                  <th style={{ textAlign: "right" }}>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {eventos.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} style={{ textAlign: "center", color: "var(--text-muted)", padding: "2rem" }}>
-                      Aún no hay metas configuradas.
-                    </td>
-                  </tr>
-                ) : (
-                  eventos.map((e) => {
-                    const totalEsperado = e.asignaciones.reduce((acc, curr) => acc + curr.monto, 0) || (e.montoEsperado * e.asignaciones.length);
-                    
-                    return (
-                      <tr key={e.id} style={{ opacity: e.cerrado ? 0.6 : 1 }}>
-                        <td data-label="Descripción" style={{ fontWeight: 500 }}>
-                          {e.descripcion}
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            {formatFecha(e.fecha)}
-                          </div>
-                        </td>
-                        <td data-label="Monto Total">
-                          {formatGuarani(totalEsperado)}
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            Base indv: {formatGuarani(e.montoEsperado)}
-                          </div>
-                        </td>
-                        <td data-label="Estado">
-                          <span className={`badge ${e.cerrado ? "badge-danger" : "badge-success"}`}>
-                            {e.cerrado ? "Cerrada" : "Abierta"}
-                          </span>
-                        </td>
-                        <td data-label="Acción" style={{ textAlign: "right", display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
-                          {isAdmin && (
-                            <>
-                              <Link href={`/eventos/${e.id}`} className="btn btn-outline btn-icon" title="Ver/Editar Cuotas por Miembro">
-                                <Users size={16} />
-                              </Link>
-                              <form action={toggleCerrado}>
-                                <input type="hidden" name="id" value={e.id} />
-                                <input type="hidden" name="cerrado" value={String(e.cerrado)} />
-                                <button type="submit" className="btn btn-outline btn-icon" title={e.cerrado ? "Reabrir" : "Cerrar"}>
-                                  {e.cerrado ? <Unlock size={16} /> : <Lock size={16} />}
-                                </button>
-                              </form>
-                            </>
-                          )}
-                          {!isAdmin && (
-                            <Link href={`/eventos/${e.id}`} className="btn btn-outline btn-icon" title="Ver Cuotas">
-                              <Users size={16} />
-                            </Link>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+          <EventosTable eventos={eventos} isAdmin={isAdmin} />
         </div>
       </div>
     </div>
