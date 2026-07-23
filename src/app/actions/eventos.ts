@@ -109,15 +109,3 @@ export async function renovarMeta(eventoOrigenId: string, nuevoMonto?: number) {
 }
 
 
-export async function updateAsignacion(id: string, monto: number) {
-  if (!(await checkAuth())) throw new Error("Unauthorized");
-  
-  await prisma.asignacionMeta.update({
-    where: { id },
-    data: { monto }
-  });
-  
-  revalidatePath("/eventos");
-  revalidatePath("/pagos");
-  revalidatePath("/");
-}
