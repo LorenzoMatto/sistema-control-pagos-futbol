@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { UserPlus, UserX } from "lucide-react";
-import { formatFecha } from "@/lib/format";
+import { UserPlus } from "lucide-react";
 import { checkAuth } from "@/app/actions/auth";
+import MiembrosTable from "@/components/MiembrosTable";
 
 export const dynamic = "force-dynamic";
 
@@ -19,22 +19,7 @@ async function createMiembro(formData: FormData) {
       data: { nombre, apodo: apodo || null },
     });
     revalidatePath("/miembros");
-  }
-}
-
-async function disableMiembro(formData: FormData) {
-  "use server";
-  const { checkAuth } = await import("@/app/actions/auth");
-  if (!(await checkAuth())) throw new Error("Unauthorized");
-  
-  const id = formData.get("id") as string;
-  
-  if (id) {
-    await prisma.miembro.update({
-      where: { id },
-      data: { activo: false },
-    });
-    revalidatePath("/miembros");
+    revalidatePath("/eventos/[id]", "page");
   }
 }
 
@@ -82,45 +67,7 @@ export default async function MiembrosPage() {
         {/* Lista */}
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <h3 style={{ marginBottom: "1rem" }}>Miembros Activos ({miembros.length})</h3>
-          <div className="table-wrapper">
-            <table className="table mobile-cards">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Apodo</th>
-                  <th>Fecha de Ingreso</th>
-                  {isAdmin && <th style={{ textAlign: "right" }}>Acción</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {miembros.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} style={{ textAlign: "center", color: "var(--text-muted)", padding: "2rem" }}>
-                      No hay miembros registrados aún.
-                    </td>
-                  </tr>
-                ) : (
-                  miembros.map((m) => (
-                    <tr key={m.id}>
-                      <td data-label="Nombre" style={{ fontWeight: 500 }}>{m.nombre}</td>
-                      <td data-label="Apodo">{m.apodo ? <span className="badge badge-success">{m.apodo}</span> : "-"}</td>
-                      <td data-label="Fecha de Ingreso">{formatFecha(m.creadoEn)}</td>
-                      {isAdmin && (
-                        <td data-label="Acción" style={{ textAlign: "right" }}>
-                          <form action={disableMiembro} style={{ display: "inline-block" }}>
-                            <input type="hidden" name="id" value={m.id} />
-                            <button type="submit" className="btn btn-outline btn-icon" title="Dar de baja">
-                              <UserX size={16} color="var(--danger)" />
-                            </button>
-                          </form>
-                        </td>
-                      )}
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <MiembrosTable miembros={miembros} isAdmin={isAdmin} />
         </div>
       </div>
     </div>
